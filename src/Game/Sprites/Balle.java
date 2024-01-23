@@ -15,14 +15,14 @@ public class Balle extends Sprite{
 
     public Balle(int diametre) {
         super(
-                (int) (Math.random() * WINDOW_WIDTH),
-                (int) (Math.random() * WINDOW_HEIGHT),
+                WINDOW_WIDTH / 2 - BALL_DIAMETER / 2,
+                WINDOW_HEIGHT - BALL_DIAMETER * 3,
                 new Color((float) Math.random(), (float) Math.random(), (float) Math.random())
         );
 
         this.diametre = diametre;
-        this.speedX = (int) (Math.random() * 5 + 2);
-        this.speedY = (int) (Math.random() * 5 + 2);
+        this.speedX = 0;
+        this.speedY = 0;
     }
 
     public Balle(int diametre, int x, int y, Color color) {
@@ -51,18 +51,16 @@ public class Balle extends Sprite{
     }
 
     public void barCollision(Balle bonus, Barre b, boolean isBonus){
-        int numberBarSection = 5;
+        int numberBarSection = 7;
         int barSection       = b.width / numberBarSection;
 
         boolean bar = y >= b.y - diametre
                    && x >= b.x
                    && x <= b.x + b.width;
 
-        boolean barLeft        = x >= b.x                  && x <= b.x +     barSection;
-        boolean barMiddleLeft  = x >= b.x +     barSection && x <= b.x + 2 * barSection;
-        boolean barMiddle      = x >= b.x + 2 * barSection && x <= b.x + 3 * barSection;
-        boolean barMiddleRight = x >= b.x + 3 * barSection && x <= b.x + 4 * barSection;
-        boolean barRight       = x >= b.x + 4 * barSection && x <= b.x + 5 * barSection;
+        boolean barLeft        = x >= b.x && x <= b.x + barSection;
+        boolean barMiddle      = x >= b.x + 3 * barSection && x <= b.x + 4 * barSection;
+        boolean barRight       = x >= b.x + 6 * barSection && x <= b.x + 7 * barSection;
 
         if (bar) {
             if (isBonus){
@@ -70,12 +68,9 @@ public class Balle extends Sprite{
                 b.width += 10;
                 CasseBrique.bonusOut.add(bonus);
             } else {
-                speedY = -speedY;
-                if (barLeft)        speedX -= 5;
-                if (barMiddleLeft)  speedX -= 3;
-                if (barMiddle)      speedX =  0; speedY = -8;
-                if (barMiddleRight) speedX += 3;
-                if (barRight)       speedX += 5;
+                if (barMiddle) speedX =  0; speedY = -8;
+                if (barLeft) speedX = speedX > 0 ? -3 : speedX - 3;
+                if (barRight) speedX = speedX > 0 ? speedX + 3 : 3;
             }
         }
     }
@@ -90,9 +85,9 @@ public class Balle extends Sprite{
 
                 if (brick) {
                     CasseBrique.oldBriques.add(block);
-                    if (y >= block.y + block.height || y + diametre <= block.height)    speedY = -speedY;
-                    else if (x >= block.x + block.width || x + diametre <= block.width) speedX = -speedX;
-                    else                                                                speedY = -speedY; speedX = -speedX;
+                    if (x >= block.x + block.width || x + diametre <= block.width) {
+                        speedX = -speedX;
+                    } else speedY = -speedY;
 
                     if (Math.random() <= 0.2) // 20% chance to launch bonus
                         CasseBrique.bonus.add(new Balle(

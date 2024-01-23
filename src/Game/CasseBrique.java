@@ -14,16 +14,16 @@ public class CasseBrique extends Canvas {
 
     public static final int WINDOW_WIDTH         = 800;
     public static final int WINDOW_HEIGHT        = 600;
-    public static final int BRICK_WIDTH          = 60;
+    public static final int BRICK_WIDTH          = 55;
     public static final int BRICK_HEIGHT         = 30;
     public static final int BRICK_LINE_NUMBER    = 12;
     public static final int BRICK_COLUMN_NUMBER  = 10;
     public static final int BRICK_POINTS         = 20;
-    public static final int BALL_STARTING_NUMBER = 3;
+    public static final int BALL_STARTING_NUMBER = 1;
     public static final int BALL_DIAMETER        = 20;
     public static final int BONUS_DIAMETER       = 10;
-    public static boolean   GAME_RUNNING         = true;
-    public static boolean   GAME_RESET           = false;
+    public static boolean GAME_RUNNING         = true;
+    public static boolean GAME_RESET           = false;
 
     Barre barre  = Barre.getInstance();
     Button play  = new Button(10, 20, Color.BLUE,    20, 20, "play");
@@ -56,6 +56,9 @@ public class CasseBrique extends Canvas {
         window.setResizable(false);
         window.requestFocus();
         panel.add(this);
+
+        buttons.add(play);
+        buttons.add(reset);
 
         window.addKeyListener(new KeyAdapter() {
             @Override
@@ -99,22 +102,20 @@ public class CasseBrique extends Canvas {
             for (int j = 1; j < BRICK_COLUMN_NUMBER; j++)
                 briques.add(new Brique(BRICK_WIDTH * i, BRICK_HEIGHT * j));
         scoreMax = briques.size() * BRICK_POINTS;
-        buttons.add(play);
-        buttons.add(reset);
     }
 
     public void update() {
         try {
             getBufferStrategy().show();
-            if (GAME_RESET) reset();
             do {
+                if (GAME_RESET) reset();
                 Graphics2D drawing = (Graphics2D) this.getBufferStrategy().getDrawGraphics();
                 drawing.clearRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
                 for (Button b : buttons) b.draw(drawing);
                 drawing.dispose();
-                Thread.sleep(1000 / 60);
             }
             while(!GAME_RUNNING);
+            Thread.sleep(1000 / 60);
         } catch (InterruptedException ignored){}
     }
 
@@ -133,30 +134,33 @@ public class CasseBrique extends Canvas {
         drawing.dispose();
     }
 
-    public static void clear(){
-        if (!briques.isEmpty()) briques.removeAll(oldBriques);
-        if (!balls.isEmpty())   balls  .removeAll(ballsOut);
-        if (!bonus.isEmpty())   bonus  .removeAll(bonusOut);
-    }
-
     public void run() {
         init();
         while (!briques.isEmpty() && !balls.isEmpty()) {
             update();
             render();
         }
-        if (briques.isEmpty()) JOptionPane.showMessageDialog(null, "You win !");
-        else                   JOptionPane.showMessageDialog(null, "You lose.");
+        String msg = briques.isEmpty() ? "You win !" : "You lose.";
+        JOptionPane.showMessageDialog(null, msg);
+        System.exit(0);
     }
+
+    public static void clear(){
+        briques.removeAll(oldBriques);
+        balls.removeAll(ballsOut);
+        bonus.removeAll(bonusOut);
+    }
+
 
     public void reset() {
         clear();
         barReset();
-        if (!briques.isEmpty()) briques.clear();
-        if (!balls.isEmpty())   balls  .clear();
-        if (!bonus.isEmpty())   bonus  .clear();
+        briques.clear();
+        balls.clear();
+        bonus.clear();
 
         GAME_RESET = false;
+        if (!GAME_RUNNING) { GAME_RUNNING = true;}
         run();
     }
 

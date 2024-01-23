@@ -1,6 +1,5 @@
 package Game.Sprites;
 
-import Game.CasseBrique;
 import Game.Listeners.ClickListener;
 
 import javax.swing.*;
