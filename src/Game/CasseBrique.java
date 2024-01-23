@@ -83,7 +83,7 @@ public class CasseBrique extends Canvas {
                                 && mouseY >= b.getY()
                                 && mouseY <= b.getY() + b.getHeight();
                         if (isButton) {
-                            b.addClickListener(b);
+                            b.addClickListener();
                         }
                     }
                 }

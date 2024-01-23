@@ -18,7 +18,7 @@ public class Button extends Rectangle implements ClickListener {
         this.name = name;
     }
 
-    public void addClickListener(ClickListener listener) {
+    public void addClickListener() {
         onClick();
     }
 
